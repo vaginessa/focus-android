@@ -35,6 +35,10 @@ import org.mozilla.focus.webkit.TrackingProtectionWebViewClient;
 public class WebViewProvider {
     private static final String KEY_CURRENTURL = "currenturl";
 
+    /* package-private */ static boolean shouldIgnoreURL(final String url) {
+        return "data:text/html;charset=utf-8;base64,".equals(url);
+    }
+
     /**
      * Preload webview data. This allows the webview implementation to load resources and other data
      * it might need, in advance of intialising the view (at which time we are probably wanting to
@@ -292,7 +296,11 @@ public class WebViewProvider {
                         // URL: we don't necessarily get a shouldInterceptRequest() after a redirect,
                         // so we can only check the updated url in onProgressChanges(), or in onPageFinished()
                         // (which is even later).
-                        callback.onURLChanged(view.getUrl());
+
+                        final String viewURL = view.getUrl();
+                        if (!shouldIgnoreURL(viewURL)) {
+                            callback.onURLChanged(viewURL);
+                        }
                         callback.onProgress(newProgress);
                     }
                 }

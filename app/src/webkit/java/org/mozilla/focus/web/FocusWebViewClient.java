@@ -95,8 +95,11 @@ public class FocusWebViewClient extends TrackingProtectionWebViewClient {
         if (callback != null) {
             callback.onPageFinished(view.getCertificate() != null);
             // The URL which is supplied in onPageFinished() could be fake (see #301), but webview's
-            // URL is always correct:
-            callback.onURLChanged(view.getUrl());
+            // URL is always correct _except_ for error pages
+            final String viewURL = view.getUrl();
+            if (!WebViewProvider.shouldIgnoreURL(viewURL)) {
+                callback.onURLChanged(view.getUrl());
+            }
         }
         super.onPageFinished(view, url);
     }
