@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
+apply plugin: 'jacoco'
+apply plugin: 'jacoco-android'
+apply plugin: 'com.github.kt3k.coveralls'
 
 
 android {
@@ -37,6 +40,14 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
+            testCoverageEnabled true
+        }
+    }
+    testOptions {
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
         }
     }
 
@@ -85,6 +96,16 @@ android {
             }
         }
     }
+}
+
+jacocoAndroidUnitTestReport {
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+}
+
+coveralls {
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoTestDebugUnitTestReport/jacocoTestDebugUnitTestReport.xml"
 }
 
 repositories {
